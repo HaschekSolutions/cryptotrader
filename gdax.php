@@ -7,6 +7,7 @@ include_once(ROOT.DS.'config.inc.php');
 
 /* Written in accordance to https://docs.gdax.com/ 
  Author: Christian Haschek <christian@haschek.at>
+ Github repo: https://github.com/HaschekSolutions/cryptotrader
  June 2017
 */
 class gdax 
@@ -15,14 +16,14 @@ class gdax
     private $key;
     private $secret;
     private $passphrase;
-    private $accounts;
+    public $accounts;
     
     private $bidsprices;
-    private $lastbidprice=0;
+    public $lastbidprice=0;
     private $lowestbids=99999;
     
     private $askprices;
-    private $lastaskprice=0;
+    public $lastaskprice=0;
     private $highestask=0;
 
     public function __construct($key, $secret, $passphrase, $sandbox=false) {
@@ -37,13 +38,16 @@ class gdax
     function updatePrices($product='BTC-USD')
     {
         $data = $this->makeRequest('/products/'.$product.'/ticker');
-        if($data===false){ echo " [X] Error getting fills\n";return false;}
+        if($data===false){ echo " [X] Error getting products\n";return false;}
         $crypto=substr($product,0,3);
         $currency=substr($product,4);
         $ask = $data['ask'];
         $bid = $data['bid'];
         $this->askpricese[$product][] = $ask;
         $this->bidprices[$product][] = $bid;
+
+        $out['ask'] = $ask;
+        $out['bid'] = $bid;
 
         if($this->lowestask>$ask)
             $this->lowestask = $ask;
@@ -52,6 +56,14 @@ class gdax
 
         $this->lastaskprice = $ask;
         $this->lastbidprice = $bid;
+
+        $data = $this->makeRequest('/products/'.$product.'/stats');
+
+        $out['24h_low'] = $data['low'];
+        $out['24h_high'] = $data['high'];
+        $out['24h_open'] = $data['open'];
+
+        return $out;
     }
 
     function printPrices($product='BTC-USD')
@@ -77,6 +89,12 @@ class gdax
             echo "   [$currency] Available: \t\t\t".$data['available'].' '.$currency."\n";
             echo "\n";
         }
+    }
+
+    function getAccountInfo($product)
+    {
+        if(!$this->accounts[$product]) return false;
+        return $this->accounts[$product];
     }
 
     // https://docs.gdax.com/#orders
@@ -193,6 +211,8 @@ class gdax
 
         curl_close($curl);
 
+        if(startsWith($resp,'Cannot')) return false;;
+
 
         $json = json_decode($resp,true);
         if($json['message'])
@@ -209,4 +229,27 @@ class gdax
         $timestamp = $timestamp ? $timestamp : time();
         return base64_encode(hash_hmac("sha256", $timestamp.$method.$request_path.$body, base64_decode($this->secret), true));
     }
+}
+
+function getArgs($lookingfor)
+{
+    global $argv;
+    foreach($argv as $key=>$argument)
+    {
+        if(!substr($argument,0,1)=='-') continue;
+        $arg = trim(substr($argument,1));
+        if(in_array($arg,$lookingfor))
+            $args[$arg] = (substr($argv[($key+1)],0,1)=='-'?true:$argv[($key+1)]);
+    }
+
+    return $args;
+}
+
+function productStringToArr($string)
+{
+    return explode('-',$string);
+}
+
+function startsWith($a, $b) { 
+    return strpos($a, $b) === 0;
 }
