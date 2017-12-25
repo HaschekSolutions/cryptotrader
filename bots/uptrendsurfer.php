@@ -17,6 +17,7 @@
 * -p <product string>                       The product string in the format "<CRYPTO>-<PAYMENT>". eg: BTC-EUR ETH-USD ETH-EUR, etc..
 * -bw <buy worth in USD/EUR>                This amount will be bought in the crypto you specified. eg "-p BTC-USD -w 100" will buy you 100$ worth of Bitcoin
 * -g <gain in percent needed for selling>   This is the percentage increase needed for the bot to sell its coins
+* -nib                                      No initial buy. Means that the script won't buy the amount you specified when it's run. You can use this to manage coins you already have
 * -sim                                      Simulate only
 *
 */
@@ -25,7 +26,7 @@ include_once(dirname(__FILE__).'/../gdax.php');
 $g = new gdax(GDAX_KEY,GDAX_SECRET,GDAX_PASSPHRASE);
 
 // check arguments and stuff
-$args = getArgs(array('p','bw','g','sim'));
+$args = getArgs(array('p','bw','g','sim','nib'));
 if(!$args['p'])
     $args['p'] = 'BTC-USD';
 if(!$args['bw'])
@@ -52,9 +53,12 @@ $g->updatePrices($args['p']);
 $coins = round((1/$g->lastaskprice)*$args['bw'],7);
 echo " [i] {$args['bw']} $currency currently is $coins $crypto\n";
 
-echo "  [!] Buying $coins $crypto!\n";
-if(!$args['sim'])
-    $data = $g->marketBuyCrypto($coins,$args['p']);
+if(!$args['nib'])
+{
+    echo "  [!] Buying $coins $crypto!\n";
+    if(!$args['sim'])
+        $data = $g->marketBuyCrypto($coins,$args['p']);
+}
 
 while(1)
 {

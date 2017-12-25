@@ -29,9 +29,10 @@ php bots/uptrendsurfer.php -p BTC-USD -bw 100 -g 10
 
 | Parameter     | What it does |
 | ------------- |:-------------|
-| -p product-string  |                      The product string in the format "CRYPTO-PAYMENT". eg: BTC-EUR ETH-USD ETH-EUR, etc..|
+| -p product-string   |                      The product string in the format "CRYPTO-PAYMENT". eg: BTC-EUR ETH-USD ETH-EUR, etc..|
 |-bw "buy worth in USD/EUR"      |          This amount will be bought in the crypto you specified. eg "-p BTC-USD -w 100" will buy you 100$ worth of Bitcoin|
 |-g "gain in percent needed for selling" |  This is the percentage increase needed for the bot to sell its coins|
+|-nib                 |  No initial buy. Means that the script won't buy the amount you specified when it's run. You can use this to manage coins you already have |
 |-sim |                                     Simulate only (no sells or buys are done, but the script thinks they were)|
 
 
