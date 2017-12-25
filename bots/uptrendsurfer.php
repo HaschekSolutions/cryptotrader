@@ -75,5 +75,5 @@ while(1)
             $data = $g->marketBuyCrypto($coins,$args['p']);
     }
 
-    sleep(10);
+    sleep(60);
 }
