@@ -60,11 +60,11 @@ while(1)
 {
     $g->updatePrices($args['p']);
     $sellprice = $g->lastbidprice*$coins;
-    echo "New worth: $sellprice\n";
+    echo "\rCurrent worth: $sellprice       ";
     if($sellprice >= $sellworth)
     {
         $profit = $sellprice - $args['bw'];
-        echo " [!!] Coins gained {$args['g']}%, will sell now for $sellprice. Made $profit $currency profit!\n";
+        echo "\n [!!] Coins gained {$args['g']}%, will sell now for $sellprice. Made $profit $currency profit!\n";
         if(!$args['sim'])
             $data = $g->marketSellCrypto($coins,$args['p']);
         
