@@ -4,6 +4,7 @@
 * Bot name: Matt (after the guy who wanted it implemented)
 * Short Description: 
 *       The Bot takes a percentage of your funds and invests automatically
+* Author: Christian Haschek
 *
 * What it does in detail:
     - You have to have USD or EUR available in your funds
@@ -25,14 +26,16 @@
 */
 
 include_once(dirname(__FILE__).'/../gdax.php');
-$g = new gdax(GDAX_KEY,GDAX_SECRET,GDAX_PASSPHRASE);
+$g = new gdax(GDAX_KEY,GDAX_SECRET,GDAX_PASSPHRASE,true);
 
-//check arguments and stuff
+// check arguments and stuff
 $args = getArgs(array('p','sp'));
 if(!$args['p'])
     $args['p'] = 'BTC-USD';
 if(!$args['sp'])
     $args['sp'] = 10;
+
+// print details to user
 
 echo " [i] Trading {$args['p']}\n";
 echo " [i] Using {$args['sp']}% of the wallets money\n";
@@ -40,13 +43,14 @@ echo " [i] Using {$args['sp']}% of the wallets money\n";
 $product = productStringToArr($args['p']);
 $crypto = $product[0];
 $currency = $product[1];
+$holding = 0;
 
 //look up funds
 $g->loadAccounts();
 $balances = $g->getAccountInfo($currency);
 //$g->printAccountInfo($currency);
 
-$balances['available']=100; //@TODO: TAKE THIS OUT
+//$balances['available']=100; //@TODO: TAKE THIS OUT
 
 if(!$balances || $balances['available']<1)
     exit(" [x] Error: Not enough funds in your $currency wallet\n");
@@ -55,14 +59,31 @@ $amount = round(($balances['available']/100)*$args['sp'],2);
 
 echo "[$currency] Will use $amount $currency to buy $crypto\n";
 
+/*
 //buy $args['p'] in $crypto
 $buydata = $g->marketBuyCurrency($amount,$args['p']);
+//exit();
 $buy_id = $buydata['id'];
+$orderinfo = $g->getOrderInfo($buy_id);
 
+$holding = $orderinfo['filled_size'];
+$buyprice = $orderinfo['executed_value']/$orderinfo['filled_size'];
+
+var_dump($buyprice);
+*/
+
+//main loop
 while(true)
 {
-    $g->updatePrices($args['p']);
+    $pricedata = $g->updatePrices($args['p']);
+    $bid = $pricedata['bid'];
+    $average = $pricedata['24h_average'];
+
+    $bid_percent = round(($bid/$average)*100,2);
+    var_dump("Bid: $bid\nAverage: $average\nPercent: $bid_percent %\n\n------\n");
+    //if($bid)
+    
     $change = $g->lastbidprice-$buyprice;
-    echo " [i] Current sell price: {$g->lastbidprice}\n";
+    echo " [i] Current sell price: {$g->lastbidprice}. Change: $change $currency\n";
     sleep(10);
 }

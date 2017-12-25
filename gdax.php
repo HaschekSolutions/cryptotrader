@@ -39,8 +39,9 @@ class gdax
     {
         $data = $this->makeRequest('/products/'.$product.'/ticker');
         if($data===false){ echo " [X] Error getting products\n";return false;}
-        $crypto=substr($product,0,3);
-        $currency=substr($product,4);
+        $a = explode('-',$product);
+        $crypto=$a[0];
+        $currency=$a[1];
         $ask = $data['ask'];
         $bid = $data['bid'];
         $this->askpricese[$product][] = $ask;
@@ -62,14 +63,16 @@ class gdax
         $out['24h_low'] = $data['low'];
         $out['24h_high'] = $data['high'];
         $out['24h_open'] = $data['open'];
+        $out['24h_average'] = round(($data['low']+$data['high'])/2,2);
 
         return $out;
     }
 
     function printPrices($product='BTC-USD')
     {
-        $crypto=substr($product,0,3);
-        $currency=substr($product,4);
+        $a = explode('-',$product);
+        $crypto=$a[0];
+        $currency=$a[1];;
 
         echo "[i] Price info for $product\n-----------\n";
         echo " [i] Ask price: \t$this->lastaskprice $currency\n";
@@ -82,7 +85,7 @@ class gdax
         echo "[i] Account overview\n-----------------\n";
         foreach($this->accounts as $currency=>$data)
         {
-            if(floatval($data['balance'])<0.1) continue;
+            //if(floatval($data['balance'])<0.0001) continue;
             echo " [i] Currency: $currency\n";
             echo "   [$currency] Total balance: \t\t".$data['balance'].' '.$currency."\n";
             echo "   [$currency] Currently in open orders: \t".$data['hold'].' '.$currency."\n";
@@ -162,7 +165,16 @@ class gdax
             else return false;
         }
         else return true;
+    }
 
+    function getOrderInfo($orderID)
+    {
+        $data = $this->makeRequest('/orders/'.$orderID);
+        if($data)
+        {
+            return $data;
+        }
+        else return false;
     }
 
     function loadAccounts()
@@ -239,7 +251,11 @@ function getArgs($lookingfor)
         if(!substr($argument,0,1)=='-') continue;
         $arg = trim(substr($argument,1));
         if(in_array($arg,$lookingfor))
-            $args[$arg] = (substr($argv[($key+1)],0,1)=='-'?true:$argv[($key+1)]);
+        {
+            $args[$arg] = ((substr($argv[($key+1)],0,1)=='-'?true:$argv[($key+1)]));
+            if($args[$arg]===NULL)
+                $args[$arg] = true;
+        }
     }
 
     return $args;
