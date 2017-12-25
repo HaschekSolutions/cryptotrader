@@ -49,7 +49,7 @@ echo " [i] Will buy {$args['bw']} $currency in $crypto\n";
 echo " [i] Will sell when $crypto will gain {$args['g']}%, meaning when it's worth $sellworth $currency\n";
 
 $g->updatePrices($args['p']);
-$coins = (1/$g->lastaskprice)*$args['bw'];
+$coins = round((1/$g->lastaskprice)*$args['bw'],7);
 echo " [i] {$args['bw']} $currency currently is $coins $crypto\n";
 
 echo "  [!] Buying $coins $crypto!\n";
@@ -68,7 +68,7 @@ while(1)
         if(!$args['sim'])
             $data = $g->marketSellCrypto($coins,$args['p']);
         
-        $coins = (1/$g->lastaskprice)*$args['bw'];
+        $coins = round((1/$g->lastaskprice)*$args['bw'],7);
         
         echo "  [!] Re-Buying $coins $crypto!\n";
         if(!$args['sim'])
