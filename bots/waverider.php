@@ -65,9 +65,11 @@ if(!$args['nib'])
     if(!$args['sim'])
     {
         //check if the user has enough cash to buy
+        $g->loadAccounts();
         $balances = $g->getAccountInfo($currency);
+        var_dump($balances);
         if(!$balances || $balances['available']<$args['bw'])
-            exit(" [x] Error: Not enough funds in your $currency wallet\n");
+            exit(" [x] Error: Not enough funds in your $currency wallet. You have: {$balances['available']} $currency but you need {$args['bw']}\n");
         $data = $g->marketBuyCrypto($coins,$args['p']);
     }
 }
@@ -103,12 +105,14 @@ while(1)
         if(!$args['sim'])
         {
             //check if the user has enough cash to buy
+            $g->loadAccounts();
             $balances = $g->getAccountInfo($currency);
             if(!$balances || $balances['available']<$args['bw'])
             {
                 echo " [x] Error: Not enough funds in your $currency wallet. Will wait until there is enough.\n";
                 while(1)
                 {
+                    $g->loadAccounts();
                     $balances = $g->getAccountInfo($currency);
                     if($balances['available']>=$args['bw']){
                         echo " [!] Finally got enough money. Will buy now\n";

@@ -26,7 +26,7 @@
 */
 
 include_once(dirname(__FILE__).'/../gdax.php');
-$g = new gdax(GDAX_KEY,GDAX_SECRET,GDAX_PASSPHRASE,true);
+$g = new gdax(GDAX_KEY,GDAX_SECRET,GDAX_PASSPHRASE);
 
 // check arguments and stuff
 $args = getArgs(array('p','sp'));
