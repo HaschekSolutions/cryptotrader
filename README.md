@@ -23,11 +23,11 @@ ONLY RUN THIS IF YOU KNOW WHAT YOU ARE DOING. IF YOU LOSE MONEY BECAUSE OF A PRO
 ## Bot 1: Uptrend Surfer
 The first bot is the most simple one.
 
-This bot will buy coins for USD/EUR, track the worth of these coins and if it made a profit, sells them and re-buys.
+This bot will buy coins for USD/EUR, track the worth of these coins and if it made a profit, sells the profit and waits for more gain to sell.
 So this bot will only make any money if the worth of the coin is rising steadily. No market analysis or else, just go with the flow.
 
 ```
-# Example usage: Buy 100 USD worth of BTC and sell when it gained 10% in value
+# Example usage: Buy 100 USD worth of BTC and sell the profits when it gained 10% in value
 php bots/uptrendsurfer.php -p BTC-USD -bw 100 -g 10
 ```
 
@@ -35,7 +35,7 @@ php bots/uptrendsurfer.php -p BTC-USD -bw 100 -g 10
 | ------------- |:-------------|
 | -p product-string   |                      The product string in the format "CRYPTO-PAYMENT". eg: BTC-EUR ETH-USD ETH-EUR, etc..|
 |-bw "buy worth in USD/EUR"      |          This amount will be bought in the crypto you specified. eg "-p BTC-USD -w 100" will buy you 100$ worth of Bitcoin|
-|-g "gain in percent needed for selling" |  This is the percentage increase needed for the bot to sell its coins|
+|-g "gain in percent needed for selling" |  This is the percentage increase needed for the bot to sell its profits|
 |-nib                 |  No initial buy. Means that the script won't buy the amount you specified when it's run. You can use this to manage coins you already have |
 |-sim |                                     Simulate only (no sells or buys are done, but the script thinks they were)|
 

@@ -10,8 +10,7 @@
 * What it does in detail:
     - You have to have USD or EUR available in your funds
     - The bot will buy coins on start (you specify the amount of money in USD/EUR)
-    - If the worth of these coins rises by some level, it will sell. Leaving you with a profit
-    - After selling it will re-buy and wait for the next raise in worth
+    - If the worth of these coins rises by some level, it will sell the profit
 *
 * Parameters:
 * -p <product string>                       The product string in the format "<CRYPTO>-<PAYMENT>". eg: BTC-EUR ETH-USD ETH-EUR, etc..
@@ -77,36 +76,13 @@ while(1)
     echo " Current worth: $sellprice\t Change: ".($profit > 0?'+':'')."$profit $currency\t\t\t\r";
     if($sellprice >= $sellworth)
     {
-        echo "\n [!!] Coins gained {$args['g']}%, will sell now for $sellprice. Made $profit $currency profit!\n";
+        echo "\n [!!] Coins gained {$args['g']}%, will sell the profits of $profit $currency now!\n";
+        $coinsforsale = round((1/$g->lastaskprice)*$profit,7);
         if(!$args['sim'])
-            $data = $g->marketSellCrypto($coins,$args['p']);
-        
-        $coins = round((1/$g->lastaskprice)*$args['bw'],7);
-        
-        echo "  [!] Re-Buying $coins $crypto!\n";
-        if(!$args['sim'])
-        {
-            //check if the user has enough cash to buy
-            $g->loadAccounts();
-            $balances = $g->getAccountInfo($currency);
-            if(!$balances || $balances['available']<$args['bw'])
-            {
-                echo " [x] Error: Not enough funds in your $currency wallet. Will wait until there is enough.\n";
-                while(1)
-                {
-                    $g->loadAccounts();
-                    $balances = $g->getAccountInfo($currency);
-                    if($balances['available']>=$args['bw']){
-                        echo " [!] Finally got enough money. Will buy now\n";
-                        break;
-                    }
-                    echo ".";
-                    sleep(60);
-                }
-            }
-            $data = $g->marketBuyCrypto($coins,$args['p']);
-        }
-            
+            $data = $g->marketSellCrypto($coinsforsale,$args['p']);
+        $coins-= $coinsforsale;
+        echo "  [$crypto] Now still holding $coins $crypto (sold $coinsforsale)\n";
+        echo "  [i] Will sell profits again when it's worth $sellworth $currency\n";
     }
 
     sleep(60);
