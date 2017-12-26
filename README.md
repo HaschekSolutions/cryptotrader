@@ -20,7 +20,7 @@ ONLY RUN THIS IF YOU KNOW WHAT YOU ARE DOING. IF YOU LOSE MONEY BECAUSE OF A PRO
 
 # Bots
 
-## Uptrend surfer
+## Bot 1: Uptrend Surfer
 The first bot is the most simple one.
 
 This bot will buy coins for USD/EUR, track the worth of these coins and if it made a profit, sells them and re-buys.
@@ -36,6 +36,26 @@ php bots/uptrendsurfer.php -p BTC-USD -bw 100 -g 10
 | -p product-string   |                      The product string in the format "CRYPTO-PAYMENT". eg: BTC-EUR ETH-USD ETH-EUR, etc..|
 |-bw "buy worth in USD/EUR"      |          This amount will be bought in the crypto you specified. eg "-p BTC-USD -w 100" will buy you 100$ worth of Bitcoin|
 |-g "gain in percent needed for selling" |  This is the percentage increase needed for the bot to sell its coins|
+|-nib                 |  No initial buy. Means that the script won't buy the amount you specified when it's run. You can use this to manage coins you already have |
+|-sim |                                     Simulate only (no sells or buys are done, but the script thinks they were)|
+
+## Bot 2: Wave Rider
+This is an advanced version of the uptrend surfer
+
+This bot is the same as the Uptrend Surfer with the only difference that after selling the gains, the bot will wait for the crypto price to drop by a percentage you specified before re-buying.
+This makes the bot a little bit more profitable in normal cases but it will miss steady uptrends. That's why this bot should be used in combination of the uptrend surfer so you have the best of both worlds.
+
+```
+# Example usage: Buy 100 USD worth of BTC, sell when it gained 10% in value and re-buy when the BTC price drops by 5%
+php bots/uptrendsurfer.php -p BTC-USD -bw 100 -g 10 -pv 5
+```
+
+| Parameter     | What it does |
+| ------------- |:-------------|
+| -p product-string   |                      The product string in the format "CRYPTO-PAYMENT". eg: BTC-EUR ETH-USD ETH-EUR, etc..|
+|-bw "buy worth in USD/EUR"      |          This amount will be bought in the crypto you specified. eg "-p BTC-USD -w 100" will buy you 100$ worth of Bitcoin|
+|-g "gain in percent needed for selling" |  This is the percentage increase needed for the bot to sell its coins|
+|-pv "plummet value in percent for re-buy" |  This is the percentage the bot will wait for the crypto price to drop before re-buying|
 |-nib                 |  No initial buy. Means that the script won't buy the amount you specified when it's run. You can use this to manage coins you already have |
 |-sim |                                     Simulate only (no sells or buys are done, but the script thinks they were)|
 

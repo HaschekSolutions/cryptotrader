@@ -1,22 +1,23 @@
 <?php 
 
 /**
-* Bot name: Uptrend Surfer
+* Bot name: Wave Rider
 * Short Description: 
-*       The bot buys some crypto and holds until it gains value, then sells and re-buys.
-*       Bot will only make money if there is an uptrend.
+*       This bot is based on the uptrend surfer with the only difference that it
+*       waits to re-buy for a small dip in the price
 * Author: Christian Haschek
 *
 * What it does in detail:
     - You have to have USD or EUR available in your funds
     - The bot will buy coins on start (you specify the amount of money in USD/EUR)
     - If the worth of these coins rises by some level, it will sell. Leaving you with a profit
-    - After selling it will re-buy and wait for the next raise in worth
+    - After selling it will wait for the price to sink a bit before finally re-buying and wait for the next spike
 *
 * Parameters:
 * -p <product string>                       The product string in the format "<CRYPTO>-<PAYMENT>". eg: BTC-EUR ETH-USD ETH-EUR, etc..
 * -bw <buy worth in USD/EUR>                This amount will be bought in the crypto you specified. eg "-p BTC-USD -w 100" will buy you 100$ worth of Bitcoin
 * -g <gain in percent needed for selling>   This is the percentage increase needed for the bot to sell its coins
+* -pv <plummet value in percent for re-buy> This is the percentage the bot will wait for the crypto price to drop before re-buying
 * -nib                                      No initial buy. Means that the script won't buy the amount you specified when it's run. You can use this to manage coins you already have
 * -sim                                      Simulate only
 *
@@ -26,13 +27,15 @@ include_once(dirname(__FILE__).'/../gdax.php');
 $g = new gdax(GDAX_KEY,GDAX_SECRET,GDAX_PASSPHRASE);
 
 // check arguments and stuff
-$args = getArgs(array('p','bw','g','sim','nib'));
+$args = getArgs(array('p','bw','g','sim','nib','pv'));
 if(!$args['p'])
     $args['p'] = 'BTC-USD';
 if(!$args['bw'])
     $args['bw'] = 100;
 if(!$args['g'])
     $args['g'] = 10;
+if(!$args['pv'])
+    $args['pv'] = 5;
 
 $a = explode('-',$args['p']);
 $crypto=$a[0];
@@ -48,6 +51,7 @@ if($args['sim'])
 echo " [i] Trading {$args['p']}\n";
 echo " [i] Will buy {$args['bw']} $currency in $crypto\n";
 echo " [i] Will sell when $crypto will gain {$args['g']}%, meaning when it's worth $sellworth $currency\n";
+echo " [i] After selling I will wait for $crypto to drop by {$args['pv']}% before re-buying\n";
 
 echo "\n ====== BOT STARTING ====== \n\n";
 
@@ -81,8 +85,21 @@ while(1)
             $data = $g->marketSellCrypto($coins,$args['p']);
         
         $coins = round((1/$g->lastaskprice)*$args['bw'],7);
-        
-        echo "  [!] Re-Buying $coins $crypto!\n";
+
+        $waitingforprice = round($g->lastbidprice-($g->lastbidprice*($args['pv']/100)),2);
+
+        echo "  [!] Entering re-buy loop. Waiting for the crypto price to drop by {$args['pv']}% to $waitingforprice $currency per $crypto!\n";
+
+        $starttime = time();
+        while($g->lastbidprice > $waitingforprice)
+        {
+            $g->updatePrices($args['p']);
+            echo " Waiting since ".translateSecondsToNiceString(time()-$starttime)."\t Current price: {$g->lastbidprice}\t Waiting for: $waitingforprice $currency per $crypto\t\t\r";
+            sleep(120);
+        }
+
+        echo "\n  [!] Price reached! Buying now.\n";
+
         if(!$args['sim'])
         {
             //check if the user has enough cash to buy
@@ -101,10 +118,41 @@ while(1)
                     sleep(60);
                 }
             }
-            $data = $g->marketBuyCrypto($coins,$args['p']);
+            $data = $g->marketBuyCurrency($args['bw'],$args['p']);
+            $coins = round((1/$g->lastaskprice)*$args['bw'],7);
         }
             
     }
 
     sleep(60);
 }
+
+function translateSecondsToNiceString($secs,$withseconds=false)
+        {
+            $units = array(
+                    "Year"   => 365*24*3600,
+                    "Month"   => 30*24*3600,
+                    "Week"   => 7*24*3600,
+                    "Day"    =>   24*3600,
+                    "Hour"   =>      3600,
+                    "Minute" =>        60,
+                    "Second" =>        1,
+            );
+            
+            if(!$withseconds)
+                unset($units["Second"]);
+
+            if ( $secs == 0 ) return "0 Seconds";
+
+            $s = "";
+
+            foreach ( $units as $name => $divisor ) {
+                    if ( $quot = intval($secs / $divisor) ) {
+                            $s .= "$quot $name";
+                            $s .= (abs($quot) > 1 ? "s" : "") . ", ";
+                            $secs -= $quot * $divisor;
+                    }
+            }
+
+            return substr($s, 0, -2);
+        }
