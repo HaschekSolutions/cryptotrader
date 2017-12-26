@@ -55,6 +55,11 @@ echo " [i] {$args['bw']} $currency currently is $coins $crypto\n";
 
 if(!$args['nib'])
 {
+    //check if the user has enough cash to buy
+    $balances = $g->getAccountInfo($currency);
+    if(!$balances || $balances['available']<$args['bw'])
+        exit(" [x] Error: Not enough funds in your $currency wallet\n");
+    
     echo "  [!] Buying $coins $crypto!\n";
     if(!$args['sim'])
         $data = $g->marketBuyCrypto($coins,$args['p']);
@@ -65,7 +70,7 @@ while(1)
     $g->updatePrices($args['p']);
     $sellprice = $g->lastbidprice*$coins;
     $profit = round($sellprice - $args['bw'],2);
-    echo "\rCurrent worth: $sellprice\t Change: ".($profit > 0?'+':'')."$profit $currency      ";
+    echo " Current worth: $sellprice\t Change: ".($profit > 0?'+':'')."$profit $currency\t\t\t\r";
     if($sellprice >= $sellworth)
     {
         echo "\n [!!] Coins gained {$args['g']}%, will sell now for $sellprice. Made $profit $currency profit!\n";
@@ -76,7 +81,26 @@ while(1)
         
         echo "  [!] Re-Buying $coins $crypto!\n";
         if(!$args['sim'])
+        {
+            //check if the user has enough cash to buy
+            $balances = $g->getAccountInfo($currency);
+            if(!$balances || $balances['available']<$args['bw'])
+            {
+                echo " [x] Error: Not enough funds in your $currency wallet. Will wait until there is enough.\n";
+                while(1)
+                {
+                    $balances = $g->getAccountInfo($currency);
+                    if($balances['available']>=$args['bw']){
+                        echo " [!] Finally got enough money. Will buy now\n";
+                        break;
+                    }
+                    echo ".";
+                    sleep(60);
+                }
+            }
             $data = $g->marketBuyCrypto($coins,$args['p']);
+        }
+            
     }
 
     sleep(60);
