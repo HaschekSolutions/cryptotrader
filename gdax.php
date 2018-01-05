@@ -1,6 +1,7 @@
 <?php 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', dirname(__FILE__));
+error_reporting(E_ALL & ~E_NOTICE);
 
 if(!file_exists(ROOT.DS.'config.inc.php')) die('Rename example.config.inc.php to config.inc.php before running');
 include_once(ROOT.DS.'config.inc.php');
