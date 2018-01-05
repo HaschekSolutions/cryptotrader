@@ -17,6 +17,7 @@
 * -bw <buy worth in USD/EUR>                This amount will be bought in the crypto you specified. eg "-p BTC-USD -w 100" will buy you 100$ worth of Bitcoin
 * -g <gain in percent needed for selling>   This is the percentage increase needed for the bot to sell its coins
 * -nib                                      No initial buy. Means that the script won't buy the amount you specified when it's run. You can use this to manage coins you already have
+* -fip <crypto price in USD/EUR>            Force initial Price. Only in combination with -nib! Uses a crypto price you specify for the first buy. Can be used to restore older sessions
 * -sim                                      Simulate only
 *
 */
@@ -25,13 +26,9 @@ include_once(dirname(__FILE__).'/../gdax.php');
 $g = new gdax(GDAX_KEY,GDAX_SECRET,GDAX_PASSPHRASE);
 
 // check arguments and stuff
-$args = getArgs(array('p','bw','g','sim','nib'));
-if(!$args['p'])
-    $args['p'] = 'BTC-USD';
-if(!$args['bw'])
-    $args['bw'] = 100;
-if(!$args['g'])
-    $args['g'] = 10;
+$args = getArgs(array('p','bw','g','sim','nib','fip'));
+if(!$args['p'] || !$args['bw'] || !$args['g'] || ($args['fip'] && !$args['nib']))
+    exit(renderUsage());
 
 $a = explode('-',$args['p']);
 $crypto=$a[0];
@@ -51,7 +48,8 @@ echo " [i] Will sell when $crypto will gain {$args['g']}%, meaning when it's wor
 echo "\n ====== BOT STARTING ====== \n\n";
 
 $g->updatePrices($args['p']);
-$coins = round((1/$g->lastaskprice)*$args['bw'],7);
+$buyprice = $args['fip']?$args['fip']:$g->lastaskprice;
+$coins = round((1/$buyprice)*$args['bw'],7);
 echo " [i] {$args['bw']} $currency currently is $coins $crypto\n";
 
 if(!$args['nib'])
@@ -86,4 +84,19 @@ while(1)
     }
 
     sleep(60);
+}
+
+function renderUsage()
+{
+    $command = 'php '.__FILE__;
+
+    echo "Usage: $command [PARAMETERS]\n-------------\n";
+    echo "Parameters:\n";
+    echo "-p product-string:    The product string in the format <CRYPTO>-<PAYMENT>. eg: BTC-EUR ETH-USD ETH-EUR, etc..\n";
+    echo "-bw <buy worth in USD/EUR>:   This amount will be bought in the crypto you specified. eg '-p BTC-USD -w 100' will buy you 100$ worth of Bitcoin\n";
+    echo "-g <gain in percent needed for selling>:  This is the percentage increase needed for the bot to sell its coins\n";
+    echo "Optional:\n";
+    echo "-nib: No initial buy. Means that the script won't buy the amount you specified when it's run. You can use this to manage coins you already have\n";
+    echo "-fip <crypto price in USD/EUR>:   Force initial Price. Only in combination with -nib! Uses a crypto price you specify for the first buy. Can be used to restore older sessions\n";
+    echo "-sim:     Simulate only\n";
 }

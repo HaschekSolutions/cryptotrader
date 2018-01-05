@@ -37,6 +37,7 @@ php bots/uptrendsurfer.php -p BTC-USD -bw 100 -g 10
 |-bw "buy worth in USD/EUR"      |          This amount will be bought in the crypto you specified. eg "-p BTC-USD -w 100" will buy you 100$ worth of Bitcoin|
 |-g "gain in percent needed for selling" |  This is the percentage increase needed for the bot to sell its profits|
 |-nib                 |  No initial buy. Means that the script won't buy the amount you specified when it's run. You can use this to manage coins you already have |
+|-fip "crypto price in USD/EUR" |            Only in combination with -nib! Uses a crypto price you specify. Can be used to restore older sessions |
 |-sim |                                     Simulate only (no sells or buys are done, but the script thinks they were)|
 
 ## Bot 2: Wave Rider
@@ -57,6 +58,7 @@ php bots/uptrendsurfer.php -p BTC-USD -bw 100 -g 10 -pv 5
 |-g "gain in percent needed for selling" |  This is the percentage increase needed for the bot to sell its coins|
 |-pv "plummet value in percent for re-buy" |  This is the percentage the bot will wait for the crypto price to drop before re-buying|
 |-nib                 |  No initial buy. Means that the script won't buy the amount you specified when it's run. You can use this to manage coins you already have |
+|-fip "crypto price in USD/EUR" |            Only in combination with -nib! Uses a crypto price you specify. Can be used to restore older sessions |
 |-sim |                                     Simulate only (no sells or buys are done, but the script thinks they were)|
 
 
