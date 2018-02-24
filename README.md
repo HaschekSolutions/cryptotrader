@@ -12,7 +12,7 @@ ONLY RUN THIS IF YOU KNOW WHAT YOU ARE DOING. IF YOU LOSE MONEY BECAUSE OF A PRO
 - Rename ```example.config.inc.php``` to ```config.inc.php```
 - Create an API key on https://www.gdax.com/settings/api and fill in the values in your ```config.inc.php``` file
 - Install PHP
-  - Windows: [Download from windows.php.net](http://windows.php.net/downloads/releases/php-7.2.0-nts-Win32-VC15-x64.zip)
+  - Windows: [Download from windows.php.net](http://windows.php.net/downloads/releases/php-7.2.2-Win32-VC15-x64.zip)
   - Linux: ```apt-get install php5``` or better yet ```apt-get install php7.1``` if available
 - Run a bot or the example scripts with php
 
