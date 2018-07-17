@@ -48,7 +48,7 @@ This makes the bot a little bit more profitable in normal cases but it will miss
 
 ```
 # Example usage: Buy 100 USD worth of BTC, sell when it gained 10% in value and re-buy when the BTC price drops by 5%
-php bots/uptrendsurfer.php -p BTC-USD -bw 100 -g 10 -pv 5
+php bots/waverider.php -p BTC-USD -bw 100 -g 10 -pv 5
 ```
 
 | Parameter     | What it does |
