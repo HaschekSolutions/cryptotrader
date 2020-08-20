@@ -1,19 +1,19 @@
-<?php 
+<?php
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', dirname(__FILE__));
 error_reporting(E_ALL & ~E_NOTICE);
 
-if(!file_exists(ROOT.DS.'config.inc.php')) die('Rename example.config.inc.php to config.inc.php before running');
 include_once(ROOT.DS.'config.inc.php');
 
-/* Written in accordance to https://docs.gdax.com/ 
+/* Written in accordance to https://docs.pro.coinbase.com/ 
  Author: Christian Haschek <christian@haschek.at>
  Github repo: https://github.com/HaschekSolutions/cryptotrader
  June 2017
 */
-class gdax 
+
+class CoinbaseExchange
 {
-    private $apiurl = "https://api.gdax.com";
+    private $apiurl = "https://api.pro.coinbase.com";
     private $key;
     private $secret;
     private $passphrase;
@@ -33,7 +33,7 @@ class gdax
         $this->passphrase = $passphrase;
 
         if($sandbox===true)
-            $this->apiurl = "https://api-public.sandbox.gdax.com";
+            $this->apiurl = "https://api-public.sandbox.pro.coinbase.com";
     }
 
     function updatePrices($product='BTC-USD')
@@ -235,12 +235,14 @@ class gdax
         }
         else return $json;
     }
-
-    /*taken from https://docs.gdax.com/#signing-a-message*/
+    
     public function signature($request_path='', $body='', $timestamp=false, $method='GET') {
         $body = is_array($body) ? json_encode($body) : $body;
         $timestamp = $timestamp ? $timestamp : time();
-        return base64_encode(hash_hmac("sha256", $timestamp.$method.$request_path.$body, base64_decode($this->secret), true));
+
+        $what = $timestamp.$method.$request_path.$body;
+
+        return base64_encode(hash_hmac("sha256", $what, base64_decode($this->secret), true));
     }
 }
 

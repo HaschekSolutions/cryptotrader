@@ -1,9 +1,9 @@
 <?php 
 date_default_timezone_set('UTC');
 
-// enter key, secret and passphrase from GDAX
+// enter key, secret and passphrase from Coinbase Pro
 // get them from:
-//          https://www.gdax.com/settings/api
-define('GDAX_KEY','');
-define('GDAX_SECRET','');
-define('GDAX_PASSPHRASE','');
+//          https://pro.coinbase.com/profile/api
+define('CB_KEY','your key here');
+define('CB_SECRET','your secret here');
+define('CB_PASSPHRASE','your passphrase here');
