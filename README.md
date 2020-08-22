@@ -1,7 +1,7 @@
 # CryptoTrader by [Haschek Solutions](https://haschek.solutions)
 
 # What does it do?
-The heart of this repo is the ```gdax.php``` file which is a simple implementation of the [GDAX](https://www.gdax.com) API written in PHP.
+The heart of this repo is the ```coinbase-pro.php``` file which is a simple implementation of the [Coinbase Pro](https://pro.coinbase.com/) API written in PHP.
 
 The aim for this project is to create various tools and bots to make trading easier. It doesn't rely on any external APIs or classes rather than php-curl.
 
@@ -10,10 +10,11 @@ ONLY RUN THIS IF YOU KNOW WHAT YOU ARE DOING. IF YOU LOSE MONEY BECAUSE OF A PRO
 # Install
 - Clone this repo or [download the zip file](https://github.com/HaschekSolutions/cryptotrader/archive/master.zip)
 - Rename ```example.config.inc.php``` to ```config.inc.php```
-- Create an API key on https://www.gdax.com/settings/api and fill in the values in your ```config.inc.php``` file
+- Create an API key on https://pro.coinbase.com/profile/api and fill in the values in your ```config.inc.php``` file
 - Install PHP
   - Windows: [Download from windows.php.net](http://windows.php.net/downloads/releases/php-7.2.2-Win32-VC15-x64.zip)
   - Linux: ```apt-get install php5``` or better yet ```apt-get install php7.1``` if available
+  - MacOS: [Install homebrew](https://brew.sh/) and then ```brew update``` followed by ```brew upgrade php```. Apple is not including PHP in future versions of MacOS. If it is missing ```brew install php```. 
 - Run a bot or the example scripts with php
 
 ![API key generation](https://www.pictshare.net/as17pqcsf8.jpg)

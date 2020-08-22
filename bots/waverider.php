@@ -24,8 +24,8 @@
 *
 */
 
-include_once(dirname(__FILE__).'/../gdax.php');
-$g = new gdax(GDAX_KEY,GDAX_SECRET,GDAX_PASSPHRASE);
+include_once(dirname(__FILE__).'/../coinbase-pro.php');
+$g = new coinbaseExchange(CB_KEY,CB_SECRET,CB_PASSPHRASE);
 
 // check arguments and stuff
 $args = getArgs(array('p','bw','g','sim','nib','pv','fip'));
